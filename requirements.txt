@@ -1,0 +1,15 @@
+cellpose==2.2
+geojson==3.0.1
+keras==2.12.0
+mahotas==1.4.13
+matplotlib==3.7.1
+opencv-python-headless==4.7.0.72
+openpyxl==3.1.2
+openslide-python==1.2.0
+scikit-image==0.20.0
+seaborn==0.12.2
+stardist==0.8.3
+tqdm==4.65.0
+torchaudio
+torchvision
+tensorflow==2.12.0

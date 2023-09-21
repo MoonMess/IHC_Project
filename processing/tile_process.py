@@ -10,13 +10,12 @@ Read IHC slides and extract the cell detection using stardist
 import os
 import random
 import numpy as np
-from skimage.color import rgb2hed, hed2rgb, rgb2gray
-from skimage.morphology import remove_small_holes, remove_small_objects, opening, disk
+from PIL import Image
+from skimage.color import rgb2hed
 from stardist.models import StarDist2D
 from csbdeep.utils import normalize
-import matplotlib.pyplot as plt
 from processing.classification import classif_avg, classif_max, classif_mix
-from parameters import area_research_detection_level, nuclei_detection_level, threshold_tile_to_keep, nuclei_classification_tile_size, size_max_cell, size_min_cell
+from parameters import nuclei_detection_level, threshold_tile_to_keep, nuclei_classification_tile_size, size_max_cell, size_min_cell
 # ==================== #
 #       PARAMETERS     #
 # ==================== #
@@ -26,6 +25,20 @@ model_stardist = StarDist2D.from_pretrained('2D_versatile_he')
 # ==================== #
 #       FUNCTIONS      #
 # ==================== #
+
+def get_tile_name(tile_folder):
+    tile_filenames = os.listdir(tile_folder)
+    random.shuffle(tile_filenames)
+    return tile_filenames
+
+
+def save_patch(patch, tmp, slide_filename) :    
+
+    im = Image.fromarray(patch)
+
+    path = "plot/testset_RP/"
+
+    im.save(os.path.join(path,"patch_"+slide_filename+"_"+str(tmp)+".png"))
 
 def filter_enough_zone(mask, corresponding_tile_size):
     #keeping the interesting part : with enough yellow TO IMPROVE
@@ -41,6 +54,21 @@ def filter_enough_zone(mask, corresponding_tile_size):
     return selected_i_and_j
 
 def update_size(mask,corresponding_tile_size):
+    """
+    Adapt the size of the mask to the corresponding tile size
+    
+    Parameters
+    ----------
+    mask : np.array
+        Mask of the slide.
+        corresponding_tile_size : int
+        Size of the tile.
+    
+    Returns
+    -------
+    mask : np.array
+        Mask of the patch.
+    """
     # adapting the sizes, as we are changing of scale
     if mask.shape[0] % corresponding_tile_size != 0:
         mask = np.concatenate(
@@ -120,5 +148,6 @@ def process_tile(tile_as_pil, nbr, slide_filename):
         class_0, class_1, class_2, class_3, class_merge = classif_max(filtered_labels, tile_hed, tile, nbr, slide_filename)
         class_0, class_1, class_2, class_3, class_merge = classif_avg(filtered_labels, tile_hed, tile, nbr, slide_filename)
         class_0, class_1, class_2, class_3, class_merge = classif_mix(filtered_labels, tile_hed, tile, nbr, slide_filename)
+        #class_0, class_1, class_2, class_3, class_merge = classif_mix_3(filtered_labels, tile_hed, tile, nbr, slide_filename)
 
     return len(np.unique(filtered_labels))

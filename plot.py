@@ -135,9 +135,9 @@ def plot_sample(tile, class_0, class_1, class_2, class_3):
     
     """
     margin_between_class = 3 #margin to add between each class
-    size_frame = 600 # basic frame without margin between class (without margin)
+    size_crop = 20 #size of the crop on the patch(=tile) to focus on the cell (size_crop x size_crop)
+    size_frame = size_crop*24 # basic frame without margin between class (without margin)
     size_per_class = size_frame//4 #size of the frame for each class
-    size_crop = 25 #size of the crop on the patch(=tile) to focus on the cell (size_crop x size_crop)
 
     #create a black frame at right size
     #frame_classes = cv2.resize(np.zeros_like(tile), dsize=(size_frame, size_frame + margin_between_class*4), interpolation=cv2.INTER_CUBIC)
@@ -220,10 +220,10 @@ def save_classif(tile, classification, fig_sample, nuclei_dab, threshold_1, thre
     fig_sample : np.array
         sample of the classification
     nuclei_dab : np.array
-        level of dab, max or avg ro both
+        level of dab, max or avg or both
 
     """
-    if title == "mix":
+    if "mix" in title:
         fig = plt.figure(figsize=(10, 10))
         #plt.subplots_adjust(wspace= 0.125, hspace= 0.125)
         gs = gridspec.GridSpec(4, 2)
@@ -256,6 +256,54 @@ def save_classif(tile, classification, fig_sample, nuclei_dab, threshold_1, thre
         #ax4.plot([threshold_3[1], threshold_3[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
         ax4.set_title('Max DAB per nuclei', )
 
+    elif "rgb" in title:
+        fig = plt.figure(figsize=(10, 10))
+        #plt.subplots_adjust(wspace= 0.125, hspace= 0.125)
+        gs = gridspec.GridSpec(6, 2)
+        ax0 = plt.subplot(gs[0:3,0])
+        ax0.imshow(tile)
+        ax0.set_title('Patch')
+        ax0.axis('off')
+
+        ax1 = plt.subplot(gs[0:3,1])
+        ax1.imshow(classification)
+        ax1.set_title('Nuclei Classification')
+        ax1.axis('off')
+
+        ax2 = plt.subplot(gs[3:6,0])
+        ax2.imshow(fig_sample)
+        ax2.set_title('Sample Nuclei Classification')
+        ax2.axis('off')
+
+        ax3 = plt.subplot(gs[3:4,1])
+        ax3.hist(nuclei_dab[0][0], bins=100, alpha=0.5, label='red class 0', color='blue')
+        ax3.hist(nuclei_dab[0][1], bins=100, alpha=0.5, label='red class 1', color='red')
+        ax3.hist(nuclei_dab[0][2], bins=100, alpha=0.5, label='red class 2', color='brown')
+        ax3.hist(nuclei_dab[0][3], bins=100, alpha=0.5, label='red class 3', color='black')
+        # ax3.plot([threshold_1[0], threshold_1[0]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        # ax3.plot([threshold_2[0], threshold_2[0]], [0, 10], color='brown', linestyle='dashed', linewidth=1)
+        # ax3.plot([threshold_3[0], threshold_3[0]], [0, 10], color='black', linestyle='dashed', linewidth=1)
+        ax3.set_title('Avg Red per nuclei')
+
+        ax4 = plt.subplot(gs[4:5,1])
+        ax4.hist(nuclei_dab[1][0], bins=100, alpha=0.5, label='green class 0', color='blue')
+        ax4.hist(nuclei_dab[1][1], bins=100, alpha=0.5, label='green class 1', color='red')
+        ax4.hist(nuclei_dab[1][2], bins=100, alpha=0.5, label='green class 2', color='brown')
+        ax4.hist(nuclei_dab[1][3], bins=100, alpha=0.5, label='green class 3', color='black')
+        #ax4.plot([threshold_1[1], threshold_1[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        #ax4.plot([threshold_2[1], threshold_2[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        #ax4.plot([threshold_3[1], threshold_3[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        ax4.set_title('Avg Green per nuclei')
+
+        ax5 = plt.subplot(gs[5:6,1])
+        ax5.hist(nuclei_dab[2][0], bins=100, alpha=0.5, label='blue class 0', color='blue')
+        ax5.hist(nuclei_dab[2][1], bins=100, alpha=0.5, label='blue class 1', color='red')
+        ax5.hist(nuclei_dab[2][2], bins=100, alpha=0.5, label='blue class 2', color='brown')
+        ax5.hist(nuclei_dab[2][3], bins=100, alpha=0.5, label='blue class 3', color='black')
+        #ax5.plot([threshold_1[1], threshold_1[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        #ax4.plot([threshold_2[1], threshold_2[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        #ax4.plot([threshold_3[1], threshold_3[1]], [0, 10], color='blue', linestyle='dashed', linewidth=1)
+        ax5.set_title('Avg Blue per nuclei')
     else:
         fig, ax = plt.subplots(2,2, figsize=(10, 10))
         ax[0][0].imshow(tile)
@@ -270,7 +318,7 @@ def save_classif(tile, classification, fig_sample, nuclei_dab, threshold_1, thre
         ax[1][0].set_title('Sample Nuclei Classification')
         ax[1][0].axis('off')
         
-        if title == "avg":
+        if "avg" in title:
             ax[1][1].hist(nuclei_dab, bins=100, color='green')
             ax[1][1].plot([threshold_3, threshold_3],[0, 10], linestyle='--', c='blue')
             ax[1][1].plot([threshold_2, threshold_2],[0, 10], linestyle='--', c='brown')
