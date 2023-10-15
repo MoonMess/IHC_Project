@@ -1,3 +1,6 @@
+
+The aim of this project is to classify tumour cells using "Giga images". To do this, we cut up the image to process (parallelizable) tiles. Then we use a deep learning algorithm to segment the cells and a simple algorithm for segmentation. 
+
 # Basic usage
 
 ## Installing requirements
